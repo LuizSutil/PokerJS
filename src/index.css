@@ -14,7 +14,7 @@ body {
   max-width: 500px;
   margin: 3px auto;
  
-  max-height: 710px;
+  /* max-height: 710px; */
   border: 1px solid steelblue;
   padding: 30px;
   border-radius: 5px;

@@ -6,6 +6,7 @@ import HigherCard from './components/HigherCard'
 import IndividualCard from './components/IndividualCard'
 import Table from './components/Table'
 import { getByTestId } from '@testing-library/react'
+import {CardGroup, OddsCalculator} from 'poker-odds-calculator';
 
 
 
@@ -193,6 +194,9 @@ function App() {
 
   ])
   
+  const [p1chance, setP1Chance] = useState(0)
+  const [p2chance, setP2Chance] = useState(0)
+
   
   //Causes Clicking on Rank to select it, deselecting other Ranks
 
@@ -225,9 +229,61 @@ function App() {
 
   }
 
+  const replacer = (string) => {
+    var y = string.replace("10","T")
+    y= y.replace("♤","s")
+    y = y.replace("♡","h")
+    y = y.replace("♧","c")
+    y= y.replace("♢","d")
+
+    return y
+  }
+
+  
+  const calculateOdds = () =>{
+
+    const h1c1R = replacer(table[0].Rank)
+    const h1c1S = replacer(table[0].Suit)
+
+    const h1c2R = replacer(table[1].Rank)
+    const h1c2S = replacer(table[1].Suit)    
+  
+    const h1c1 = [h1c1R,h1c1S].join("")
+    const h1c2 = [h1c2R,h1c2S].join("")
+
+    const h1 = [h1c1,h1c2].join("")
+
+
+    const h2c1R = replacer(table[2].Rank)
+    const h2c1S = replacer(table[2].Suit)
+
+    const h2c2R = replacer(table[3].Rank)
+    const h2c2S = replacer(table[3].Suit)    
+  
+    const h2c1 = [h2c1R,h2c1S].join("")
+    const h2c2 = [h2c2R,h2c2S].join("")
+
+    const h2 = [h2c1,h2c2].join("")
+
+
+    
+    
+    const board = CardGroup.fromString("");
+
+    const player1Cards = CardGroup.fromString(h1);
+    const player2Cards = CardGroup.fromString(h2);
+    
+    const result = OddsCalculator.calculate([player1Cards, player2Cards], board);
+    //console.log(result.equities[0].getEquity())
+    //console.log(result.equities[1].getEquity())
+    setP1Chance(result.equities[0].getEquity())
+    setP2Chance(result.equities[1].getEquity())
+
+  }
+
   return (
     <div className='container'>
-      <Header / >
+      <Header />
       <div className='container1'>
         <CardBuilder cardArray = {cardRank} onClick = {onRank}/>
       </div>
@@ -238,10 +294,13 @@ function App() {
 
       <div className='container3'>
         <button style = {{background:'steelblue'}}  className = 'btn' onClick = {setter} >set card</button>
-        <button style = {{background:'purple'}} className = 'btn' >Calculate odds</button>
+        <button style = {{background:'purple'}} className = 'btn' onClick = {()=> calculateOdds(table)} >Calculate odds</button>
         <Table tableArray = {table} onClick = {onTable}/>
       </div>
-        
+      <div style={{display:'flex',flexDirection:"column"}}>
+        <h3>P1 chance de ganhar: {p1chance}%</h3>
+        <h3>P2 chance de ganhar: {p2chance}%</h3>
+      </div>
       
     </div>
   );
